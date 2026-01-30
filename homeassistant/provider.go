@@ -36,9 +36,11 @@ func Provider() *schema.Provider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"homeassistant_light": resourceLight(),
+			"homeassistant_zone":  resourceZone(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"homeassistant_light": dataSourceLight(),
+			"homeassistant_zone":  dataSourceZone(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

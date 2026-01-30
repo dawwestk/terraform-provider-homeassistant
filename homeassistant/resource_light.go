@@ -3,12 +3,17 @@ package homeassistant
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/dawwestk/terraform-provider-homeassistant/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+// stateSettleDelay is the time to wait after calling a service
+// to allow Home Assistant to update the entity state
+const stateSettleDelay = 500 * time.Millisecond
 
 func resourceLight() *schema.Resource {
 	return &schema.Resource{
@@ -110,6 +115,9 @@ func resourceLightCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(fmt.Errorf("failed to set light state: %w", err))
 	}
 
+	// Wait for Home Assistant to update the state
+	time.Sleep(stateSettleDelay)
+
 	d.SetId(entityID)
 
 	return resourceLightRead(ctx, d, m)
@@ -197,6 +205,9 @@ func resourceLightUpdate(ctx context.Context, d *schema.ResourceData, m interfac
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("failed to update light state: %w", err))
 	}
+
+	// Wait for Home Assistant to update the state
+	time.Sleep(stateSettleDelay)
 
 	return resourceLightRead(ctx, d, m)
 }
